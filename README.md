@@ -88,9 +88,9 @@ This code can be changed to
         ...
         String name = null;
 ```
-3. From getFundamentalInfo above, ```String name = null;``` can be reduced to ```String name```
+3. From getFundamentalInfo above, ```String name = null;``` can be reduced to ```String name;```
 
-4. ```line = br.readLine();``` can be reduced to br.readline()
+4. ```line = br.readLine();``` can be reduced to ```br.readline();```
 ```java
     public int[] latestWeekGlobal(String sourceFile) {
         String line;
