@@ -30,35 +30,35 @@ This code can be changed to
 ```
 
 ## Extract Method
-- Most of methods in the file has to open csv file. Those methods contain 
-    ```java
+Most of methods in the file has to open csv file. Those methods contain 
+```java
+    File file = new File(sourceFile);
+        try (InputStream in = new FileInputStream(file);
+                Reader reader = new InputStreamReader(in);
+                BufferedReader br = new BufferedReader(reader);) {
+                    ...
+                }
+```
+To shorten the code, make a new method
+```java
+    private boolean canOpen(String sourceFile){
         File file = new File(sourceFile);
-            try (InputStream in = new FileInputStream(file);
-                    Reader reader = new InputStreamReader(in);
-                    BufferedReader br = new BufferedReader(reader);) {
-                        ...
-                    }
-    ```
-    To shorten the code, make a new method
-    ```java
-        private boolean canOpen(String sourceFile){
-            File file = new File(sourceFile);
-            try (InputStream in = new FileInputStream(file);
-                    Reader reader = new InputStreamReader(in);
-                    BufferedReader br = new BufferedReader(reader);) {
-                        ...
-                    }
-        }
-    ```
-    In the code, use ```canOpen``` with if statement.
-    ```java
-        if canOpen(sourceFile){
-            ...
-        }
-        else {
-            ... // Throw some exception
-        }
-    ```
+        try (InputStream in = new FileInputStream(file);
+                Reader reader = new InputStreamReader(in);
+                BufferedReader br = new BufferedReader(reader);) {
+                    ...
+                }
+    }
+```
+In the code, use ```canOpen``` with if statement.
+```java
+    if canOpen(sourceFile){
+        ...
+    }
+    else {
+        ... // Throw some exception
+    }
+```
 
 ## Clean up
 1. ```@return``` should return instance of InformationHandle.
@@ -103,6 +103,44 @@ This code can be changed to
             line = br.readLine();
             int number;
 ```
+From https://github.com/OOP2020/pa4-pattarinn/blob/master/src/tracker/HomePageController.java
+## Extract Class
+HomePageController is used to control and build up homepage, but there is
+```java
+    private void createGraph(InformationHandle info)
+```
+that is used to make a graph and can be seperated to a new class to make HomePageController be more specific.
+Solution: create a new class called ```CreateGraph``` and move 
+```java
+    private void createGraph(InformationHandle info)
+```
+modify code in ```createGraph``` to make it more easier to use in HomePageController
+```java
+    public XYChart createGraph(String[] dateForCases, String graphName, PathFile path) {
+        XYChart.Series<CategoryAxis, NumberAxis> seriesCase = new XYChart.Series<>();
+        seriesCase.setName(graphName);
+        int[] lastWeekCase = info.latestWeekGlobal(path);
+        String[] dateCase = dateForCases;
+        for (int i = 0; i < 7; i++) {
+            seriesCase.getData().add(new XYChart.Data(dateCase[dateCase.length - 7 + i], lastWeekCase[i]));
+        }
+        return seriesCase;
+    }
+```
+in HomePageController, create new method to invoke ```createGraph``` to build a graph
+```java
+    private void getGraph(InformationHandle info) {
+        XYChart.Series<CategoryAxis, NumberAxis> seriesCase = new XYChart.Series<>();
+        XYChart.Series<CategoryAxis, NumberAxis> seriesDeath = new XYChart.Series<>();
+        XYChart.Series<CategoryAxis, NumberAxis> seriesRecov = new XYChart.Series<>();
+        seriesCase = createGraph(info.dateCase, "Confirm Cases", PathFile.cases);
+        seriesDeath = createGraph(info.dateDeathCase, "Death Cases", PathFile.death)
+        seriesRecov = createGraph(info.dateRecoveryCase, "Recovery Cases", PathFile.recovery)
+        graph.getData().addAll(seriesCase, seriesDeath, seriesRecov);
+    }
+```
+
+
 
 <h1>Refactoring for PA2</h1>
 From https://github.com/OOP2020/pa2-pattarinn
