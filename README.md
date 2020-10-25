@@ -1,6 +1,111 @@
 # Refactoring
 
-from https://github.com/OOP2020/pa2-pattarinn
+Note: This README has 2 refactoring works; PA2 and PA4. At first, I misunderstood about the problem. I thought it can be anything in my Github repo, so I did refactoring for my PA2. I also included my PA2 work at the bottom of README.md.
+
+<h1> Refactoring for PA4 </h1>
+From https://github.com/OOP2020/pa4-pattarinn
+
+Refactoring: https://github.com/OOP2020/pa4-pattarinn/blob/master/src/tracker/InformationHandle.java
+
+## Inline temp
+```java
+    public int sentencePosition(String countryToSearch, String type){
+        ...
+        if (s.contains(countryToSearch)) {
+                int atSentence = mapToSearch.get(s);
+                return atSentence;
+        }
+        ...
+    }
+```
+This code can be changed to
+```java
+    public int sentencePosition(String countryToSearch, String type){
+        ...
+        if (s.contains(countryToSearch)) {
+                return mapToSearch.get(s);
+        }
+        ...
+    }
+```
+
+## Extract Method
+- Most of methods in the file has to open csv file. Those methods contain 
+    ```java
+        File file = new File(sourceFile);
+            try (InputStream in = new FileInputStream(file);
+                    Reader reader = new InputStreamReader(in);
+                    BufferedReader br = new BufferedReader(reader);) {
+                        ...
+                    }
+    ```
+    To shorten the code, make a new method
+    ```java
+        private boolean canOpen(String sourceFile){
+            File file = new File(sourceFile);
+            try (InputStream in = new FileInputStream(file);
+                    Reader reader = new InputStreamReader(in);
+                    BufferedReader br = new BufferedReader(reader);) {
+                        ...
+                    }
+        }
+    ```
+    In the code, use ```canOpen``` with if statement.
+    ```java
+        if canOpen(sourceFile){
+            ...
+        }
+        else {
+            ... // Throw some exception
+        }
+    ```
+
+## Clean up
+1. ```@return``` should return instance of InformationHandle.
+```java
+    /**
+     * Get instance of InformationHandle.
+     * 
+     * @return
+     */
+    public static InformationHandle getInstance() {
+        if (ih == null)
+            ih = new InformationHandle();
+        return ih;
+    }
+```
+2. ```@param top5``` should be deleted.
+```java 
+    /**
+     * Load the information
+     * 
+     * @param allCountries map a country with its sentence number
+     * @param top5         of the most case
+     * @param sourceFile   file to get the information
+     */
+    private void getFundamentalInfo(Map<String, Integer> allCountries, String sourceFile) {
+        File file = new File(sourceFile);
+        ...
+        String name = null;
+```
+3. From getFundamentalInfo above, ```String name = null;``` can be reduced to ```String name```
+
+4. ```line = br.readLine();``` can be reduced to br.readline()
+```java
+    public int[] latestWeekGlobal(String sourceFile) {
+        String line;
+        int[] lastWeek = new int[7];
+        String[] lineSplit;
+        File file = new File(sourceFile);
+        try (InputStream in = new FileInputStream(file);
+                Reader reader = new InputStreamReader(in);
+                BufferedReader br = new BufferedReader(reader);) {
+            line = br.readLine();
+            int number;
+```
+
+<h1>Refactoring for PA2</h1>
+From https://github.com/OOP2020/pa2-pattarinn
 
 Refactoring: https://github.com/OOP2020/pa2-pattarinn/blob/master/encryptdecrypt/Main.java
 
